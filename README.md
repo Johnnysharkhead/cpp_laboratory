@@ -1,2 +1,2 @@
-# Cpp_laboratory
+# cpp_laboratory
 Fight for bonus
