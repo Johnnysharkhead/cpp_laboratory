@@ -1,5 +1,6 @@
 #include "lab03.h"
 #include <iostream>
+using namespace std;
 
 // TODO: Complementary work: Do not iterate through the list unnecessarily 
 // Comment: When the listlength() function is called you iterate through the
@@ -9,20 +10,16 @@
 
 // TODO: Complementary work: Code duplication. Can you perhaps 
 // reuse the code from the copy constructor by creating a local copy 
-// of other? Same goes for move. -- CHECK (partly)
+// of other? Same goes for move. -- CHECK
 
 // TODO: Complementary work: The list should not print anything unless
 // explicitly told to. -- CHECK
 
-// TODO: Complementary work: You have some redundant deletes.
+// TODO: Complementary work: You have some redundant deletes. -- CHECK
 
-
-using namespace std;
-// In this programme, we give the following name to elements in a link list:
-// Head -> first node(index 0) -> second node(index 1) ... -> null 
 myList::myList() : head {nullptr}, length(0) {}
 
-// Optimize the code duplication, reuse this function and called by 'Copy constructor' and 'Copy assginment opearator'
+// Optimize the code duplication, reuse this function. Called by 'Copy constructor' and 'Copy assginment opearator'
 void myList::copyList(const myList& other){
     // If the list 'other' is empty
     if(other.head == nullptr){
@@ -43,6 +40,14 @@ void myList::copyList(const myList& other){
     }
 }
 
+// Optimize the code duplication, reuse this function. Called by 'Move constructor' and 'Move assginment opearator'
+void myList::moveList(myList& other){
+    this->deleteEveryNode();
+    head = other.head; // Head node point to the first node of the list that being moved
+    other.head = nullptr; // Free other's head node, avoid memory leak
+}
+
+
 // Copy constructor(deep copy)
 myList::myList(const myList& other){
     copyList(other);
@@ -59,8 +64,7 @@ myList& myList::operator= (const myList& other){
 
 // Move constructor
 myList::myList(myList&& other){
-    head = other.head;// Head node point to the first node of the list that being moved
-    other.head = nullptr; // Free other's head node, avoid memory leak
+    moveList(other);
 }
 
 // Move assginment operator
@@ -69,13 +73,10 @@ myList& myList::operator= (myList&& other){
         return *this; // Judge whether they are same
     }
     else{
-        this->deleteEveryNode(); // Release all values of the current list except for the head node
-        head = other.head;
-        other.head = nullptr; // Avoid memory leak
+        moveList(other); 
+        return *this;
     }
-    return *this;
 }
-
 
 // Call by Destructor and Move assignment operator
 void myList:: deleteEveryNode(){
@@ -186,41 +187,6 @@ void myList::removebyIndex(int removeIndex){
     }
 }
 
-void myList::printList() const{
-
-    Node* tempNode = head;
-    std::cout << "The current list: ";
-
-    if (tempNode==nullptr)
-    {
-        std::cout << "NULL";
-    }
-
-    while(tempNode != nullptr)
-    {
-        std::cout << tempNode->data << " -> ";
-        tempNode = tempNode -> next;
-    }
-    std::cout << "null" << std::endl;
-    std::cout << "The amount of nodes in the current list is: " << this->listLength() << "\n" << std::endl;   
-}
-std::string myList::printTest() const{
-    string test{};
-    Node* tempNode = head;
-
-    if (tempNode==nullptr){
-        test = "NULL";
-        return test;
-    }
-
-    while (tempNode!=nullptr)
-    {
-      test.append(std::to_string(tempNode->data));
-      tempNode = tempNode->next;
-    }
-    return test;
-}
-
 int myList::at(int nodeIndex) const{
     // handle the exception
     if ( nodeIndex < 0 || nodeIndex > (listLength()-1) ){
@@ -241,10 +207,9 @@ int myList::at(int nodeIndex) const{
     return tempNode->data;        
 }
 
-// User has to get the length of list by call this instead of the private member variable 'length'
+// User gets the length of list via calling this function
 int myList::listLength() const{ 
     if (head == nullptr) return 0;
     else return length;
 }
-
 

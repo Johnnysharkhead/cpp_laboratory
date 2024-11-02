@@ -1,18 +1,29 @@
 #define CATCH_CONFIG_MAIN
 #include "lab03.h"
 #include "catch.hpp"
+#include <string>
 
 // TODO: Complementary work: Test cases insufficient, what if a list is 
-// empty for all functions? -- CHECK
+// empty for all functions? -- CHECK (Line 52-78)
 
-// TODO: Complementary work: unnecessary include  -- CHECK 
+// TODO: Complementary work: unnecessary include  -- CHECK (keep include concise) 
 
-// In this programme, we give the following name to elements in a link list:
-// Head -> first node(index 0) -> second node(index 1) ... -> null
+std::string myList::printTest() const{
+    std::string test{};
+    Node* tempNode = head;
 
-//=======================================================================
-// Test cases
-//=======================================================================
+    if (tempNode==nullptr){
+        test = "NULL";
+        return test;
+    }
+
+    while (tempNode!=nullptr)
+    {
+      test.append(std::to_string(tempNode->data));
+      tempNode = tempNode->next;
+    }
+    return test;
+}
 
 TEST_CASE( "CRUD of link list" ) { // No memory leak detected
     
@@ -66,7 +77,6 @@ TEST_CASE( "All about empty list"){
     CHECK(c.printTest() == "NULL");
 }
 
-
 TEST_CASE( "COPY Constructor of link list" ) { // No memory leak detected
 
     myList list;
@@ -79,6 +89,9 @@ TEST_CASE( "COPY Constructor of link list" ) { // No memory leak detected
     CHECK(list.printTest() == "468");
     CHECK(listcopy.printTest() == "2468"); // listcopy does not change with list
 
+    myList empty; // Test empty list
+    myList k(empty) ;
+    CHECK(k.printTest() == "NULL");
 }
 
 TEST_CASE( "COPY assignment operator of link list" ) { // No memory leak detected
@@ -96,6 +109,9 @@ TEST_CASE( "COPY assignment operator of link list" ) { // No memory leak detecte
     CHECK(b.printTest() == "6789");
     CHECK(a.printTest() == "678"); // Confirm list a does not change with b
 
+    myList empty; // Test empty list
+    myList k = empty;
+    CHECK(k.printTest() == "NULL");
 } 
 
 TEST_CASE( "MOVE assignment operator of link list" ) { // No memory leak detected
@@ -109,6 +125,10 @@ TEST_CASE( "MOVE assignment operator of link list" ) { // No memory leak detecte
 
     CHECK(a.printTest() == "678");
     CHECK(b.listLength() == 0); // Confirm that we release all resources of list b
+
+    myList empty; // Test empty list
+    myList k = std::move(empty);
+    CHECK(k.printTest() == "NULL");
 } 
 
 TEST_CASE( "MOVE Constructor of link list" ) { // No memory leak detected
@@ -120,4 +140,7 @@ TEST_CASE( "MOVE Constructor of link list" ) { // No memory leak detected
     CHECK(listmove.printTest() == "2468");
     CHECK(list.listLength() == 0); // Confirm that we release all resources of list
 
+    myList empty; // Test empty list
+    myList k (std::move(empty));
+    CHECK(k.printTest() == "NULL");
 } 
