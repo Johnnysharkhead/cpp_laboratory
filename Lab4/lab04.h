@@ -10,17 +10,17 @@ public:
 	double getPointVoltage() const {
 		return m_pointVoltage;
 	}
-	void changePointVoltage(double newVoltage);
+	void changePointVoltage(double newVoltage) {
+		m_pointVoltage = newVoltage;
+	}
 private:
-	double m_pointVoltage;
+	double			m_pointVoltage;
 };
 
 class Component {
 public:
-	Component() {//以防万一重载了一个默认的构造函数
-
-	}
-	Component(std::string componentName, Connection* leftConnection, Connection* rightConnection) :
+	Component();//以防万一重载了一个默认的构造函数
+	Component(std::string componentName, Connection& leftConnection, Connection& rightConnection) :
 		m_componentName(componentName), m_leftConnection(leftConnection), m_rightConnection(rightConnection), m_current(0) {
 		
 	}
@@ -28,8 +28,8 @@ public:
 	virtual void computingCurrent() = 0;//计算当前元件的电流
 protected:
 	std::string		m_componentName;
-	Connection*		m_leftConnection;
-	Connection*		m_rightConnection;
+	Connection&		m_leftConnection;
+	Connection&		m_rightConnection;
 	double			m_current;
 };
 
@@ -38,13 +38,12 @@ public:
 	Battery() {
 
 	}
-	Battery(std::string batteryName, double voltage, Connection* leftConnection, Connection* rightConnection) :
+	Battery(std::string batteryName, double voltage, Connection& leftConnection, Connection& rightConnection) :
 		Component(batteryName, leftConnection, rightConnection), m_voltage(voltage) {
-
+		this->m_rightConnection.changePointVoltage(m_voltage);
 	}
-	void computingCurrent() override;
 private:
-	double m_voltage;
+	double			m_voltage;
 };
 
 class Resistor : public Component {
@@ -52,14 +51,14 @@ public:
 	Resistor() {
 
 	}
-	Resistor(std::string resistorName, double resistance, Connection* leftConnection, Connection* rightConnection) :
+	Resistor(std::string resistorName, double resistance, Connection& leftConnection, Connection& rightConnection) :
 		Component(resistorName, leftConnection, rightConnection), m_resistance(resistance) {
 
 	}
 	void computingVoltage() override;
 	void computingCurrent() override;
 private:
-	double m_resistance;
+	double			m_resistance;
 };
 
 class Capacitor : public Component {
@@ -67,17 +66,16 @@ public:
 	Capacitor() {
 
 	}
-	Capacitor(std::string capacitorName, double capacitance, Connection* leftConnection, Connection* rightConnection) :
+	Capacitor(std::string capacitorName, double capacitance, Connection& leftConnection, Connection& rightConnection) :
 		Component(capacitorName, leftConnection, rightConnection), m_capacitance(capacitance), m_storedVoltage(0) {
 
 	}
-	void computingVoltage() override;//原名不能添加参数 只能用重载
 	void computingVoltage(double timeUnit);//重载，在里面修改m_storedVoltage
 	void computingCurrent() override;
 private:
-	double m_capacitance;
-	double m_storedVoltage;
+	double			m_capacitance;
+	double			m_storedVoltage;
 };
 
 void simulate(std::vector<Component*> circuit, int iterationTimes, int linesToPrint, int timeSlot);//循环计算的同时打印数据
-void deallocate_components(std::vector<Component*> circuit);//在这里delete vector里new的元件
+void deallocate_components(std::vector<Component*> circuit);//在这里循环delete vector里new的元件
