@@ -16,11 +16,17 @@ void Resistor::computingCurrent() {
 }
 
 void Capacitor::computingVoltage(double timeSlot) {
+	double voltageDifference = m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();
+	double chargeToStore = m_capacitance * (voltageDifference - m_storedVoltage);
 
+	m_storedVoltage = m_storedVoltage + chargeToStore; // 更新迭代后已储存电荷的总和
+
+	m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeToStore);
+	m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeToStore);
 }
 
 void Capacitor::computingCurrent() {
-
+	m_current = m_capacitance * (m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage() - m_storedVoltage);
 }
 
 void simulate(std::vector<Component*> circuit, int iterationTimes, int linesToPrint, double timeSlot) {
@@ -35,7 +41,7 @@ void simulate(std::vector<Component*> circuit, int iterationTimes, int linesToPr
 	std::cout << std::endl;
 
 	int count = 0;
-	while (count < iterationTimes) {
+	while (count < iterationTimes && linesToPrint > 0) {
 		count++;
 		for (auto i : circuit) {
 			i->computingVoltage(timeSlot);
@@ -43,6 +49,7 @@ void simulate(std::vector<Component*> circuit, int iterationTimes, int linesToPr
 		}
 		if (count == iterationTimesBeforePrint) {
 			count = 0;
+			linesToPrint--;
 			for (auto i : circuit) {
 				std::cout << std::right << std::setw(5)<< i->getVoltage() << " " << i->getCurrent() << " ";
 			}
