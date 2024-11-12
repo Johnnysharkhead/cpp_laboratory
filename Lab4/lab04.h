@@ -47,6 +47,9 @@ public:
 	std::string getComponentName() const override {
 		return m_componentName;
 	}
+	double getCurrent() const override;//不override实例化会报错，不必实现
+	void computingVoltage() override;//不必实现
+	void computingCurrent() override;//不必实现
 private:
 	double			m_voltage;
 };
