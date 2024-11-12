@@ -4,24 +4,31 @@
 #include <iomanip>
 
 void Resistor::computingVoltage(double timeSlot) {
-	double voltageDifference	= m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();	// µçÊÆ²î
-	double chargeMove			= voltageDifference / timeSlot;													// µçºÉÒÆ¶¯£¨ÓÃÓÚleftConnectionºÍrightConnectionµÄµçÑ¹¸üÐÂ£©
-	m_leftConnection	->	changePointVoltage(m_leftConnection->getPointVoltage() - chargeMove);				// µçºÉÒÆ¶¯ºó£¬¸üÐÂÕý¼«µçÑ¹
-	m_rightConnection	->	changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);				// µçºÉÒÆ¶¯ºó£¬¸üÐÂ¸º¼«µçÑ¹
+	double voltageDifference = m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();	// ï¿½ï¿½ï¿½Æ²ï¿½
+	double chargeMove = voltageDifference / timeSlot;													// ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½leftConnectionï¿½ï¿½rightConnectionï¿½Äµï¿½Ñ¹ï¿½ï¿½ï¿½Â£ï¿½
+	m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeMove);				// ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ó£¬¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹
+	m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);				// ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ó£¬¸ï¿½ï¿½Â¸ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹
 }
 
 void Resistor::computingCurrent() {
-	m_current = (m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage()) / m_resistance;	// Ê¹ÓÃ£¨¸üÐÂºóµÄÕý¼«µçÑ¹-¸üÐÂºóµÄ¸º¼«µçÑ¹£©/µç×èÖµ
-																												// »ñÈ¡µ±Ç°µÄµçÁ÷Öµ
+	m_current = (m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage()) / m_resistance;	// Ê¹ï¿½Ã£ï¿½ï¿½ï¿½ï¿½Âºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹-ï¿½ï¿½ï¿½Âºï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½Öµ																											// ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½Äµï¿½ï¿½ï¿½Öµ
 }
 
 void Capacitor::computingVoltage(double timeSlot) {
+	double voltageDifference  =  m_leftConnection->getPointVoltage() -  m_rightConnection->getPointVoltage() ;
+	double chargeToStore = m_capacitance * (voltageDifference - m_storedVoltage);
+	
+	m_storedVoltage = m_storedVoltage + chargeToStore; // æ›´æ–°è¿­ä»£åŽå·²å‚¨å­˜ç”µè·çš„æ€»å’Œ
 
+	m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeToStore);
+	m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeToStore);
 }
 
 void Capacitor::computingCurrent() {
-
+	m_current = m_capacitance * ( m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage() - m_storedVoltage );
 }
+
+
 
 void simulate(std::vector<Component*> circuit, int iterationTimes, int linesToPrint, double timeSlot) {
 	for (auto i : circuit) {
