@@ -7,9 +7,7 @@
 
 class Connection {
 public:
-	Connection(): m_pointVoltage(0), m_end(false) {
-
-	}
+	Connection(): m_pointVoltage(0), m_end(false) {}
 	Connection(bool ifEnd) : m_pointVoltage(0), m_end(ifEnd) {
 
 	}
@@ -19,7 +17,7 @@ public:
 	void changePointVoltage(double newVoltage) {
 		m_pointVoltage = newVoltage;
 	}
-	std::string whichEnd() const {//ÎÒÏë°ÑËü¸ÄµÃÒ×¶®Ò»µã µ«Ò²²»ÊÇºÜÒ×¶®...Ö®ºóÔÙ¸Ä
+	std::string whichEnd() const {//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½×¶ï¿½Ò»ï¿½ï¿½ ï¿½ï¿½Ò²ï¿½ï¿½ï¿½Çºï¿½ï¿½×¶ï¿½...Ö®ï¿½ï¿½ï¿½Ù¸ï¿½
 		if (m_pointVoltage > 0 && m_end) {
 			return "left";
 		}
@@ -35,7 +33,7 @@ private:
 
 class Component {
 public:
-	Component() {//ÒÔ·ÀÍòÒ»ÖØÔØÁËÒ»¸öÄ¬ÈÏµÄ¹¹Ôìº¯Êı
+	Component() {//ï¿½Ô·ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¬ï¿½ÏµÄ¹ï¿½ï¿½ìº¯ï¿½ï¿½
 
 	}
 	Component(std::string componentName, Connection* leftConnection, Connection* rightConnection) :
@@ -43,12 +41,12 @@ public:
 		
 	}
 
-	virtual void computingVoltage(double timeSlot) = 0;//¼ÆËãµçÑ¹Öµ£¬ÔÚº¯ÊıÄÚĞŞ¸ÄÏàÓ¦µãµÄµçÑ¹
-	virtual void computingCurrent() = 0;//¼ÆËãµ±Ç°Ôª¼şµÄµçÁ÷
+	virtual void computingVoltage(double timeSlot) = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹Öµï¿½ï¿½ï¿½Úºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ş¸ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Äµï¿½Ñ¹
+	virtual void computingCurrent() = 0;//ï¿½ï¿½ï¿½ãµ±Ç°Ôªï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½
 
-	virtual std::string getComponentName() const = 0;//·µ»ØÔª¼şÃû
-	virtual double getCurrent() const = 0;//·µ»ØµçÁ÷Öµ
-	virtual double getVoltage() const = 0;//·µ»ØµçÑ¹²î
+	virtual std::string getComponentName() const = 0;//ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½ï¿½ï¿½
+	virtual double getCurrent() const = 0;//ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½Öµ
+	virtual double getVoltage() const = 0;//ï¿½ï¿½ï¿½Øµï¿½Ñ¹ï¿½ï¿½
 
 protected:
 	std::string		m_componentName;
@@ -69,16 +67,16 @@ public:
 	std::string getComponentName() const override {
 		return m_componentName;
 	}
-	double getCurrent() const override {//²»overrideÊµÀı»¯»á±¨´í£¬²»±ØÊµÏÖ
+	double getCurrent() const override {//ï¿½ï¿½overrideÊµï¿½ï¿½ï¿½ï¿½ï¿½á±¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½
 		return 0.0;
 	}
 	double getVoltage() const override {
 		return m_voltage;
 	}
-	void computingVoltage(double timeSlot) override {//²»±ØÊµÏÖ
+	void computingVoltage(double timeSlot) override {//ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½
 
 	}
-	void computingCurrent() override {//²»±ØÊµÏÖ
+	void computingCurrent() override {//ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½
 
 	}
 private:
@@ -131,12 +129,12 @@ public:
 	double getVoltage() const override {
 		return m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();
 	}
-	void computingVoltage(double timeSlot);//ÖØÔØ£¬ÔÚÀïÃæĞŞ¸Äm_storedVoltage
+	void computingVoltage(double timeSlot) override; //ï¿½ï¿½ï¿½Ø£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ş¸ï¿½m_storedVoltage
 	void computingCurrent() override;
 private:
 	double			m_capacitance;
 	double			m_storedVoltage;
 };
 
-void simulate(std::vector<Component*> circuit, int iterationTimes, int linesToPrint, double timeSlot);//Ñ­»·¼ÆËãµÄÍ¬Ê±´òÓ¡Êı¾İ
-void deallocate_components(std::vector<Component*> circuit);//ÔÚÕâÀïÑ­»·delete vectorÀïnewµÄÔª¼ş
+void simulate(std::vector<Component*> circuit, int iterationTimes, int linesToPrint, double timeSlot);//Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½
+void deallocate_components(std::vector<Component*> circuit);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½delete vectorï¿½ï¿½newï¿½ï¿½Ôªï¿½ï¿½
