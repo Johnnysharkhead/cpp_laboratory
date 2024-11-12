@@ -26,6 +26,8 @@ public:
 	}
 	virtual void computingVoltage() = 0;//计算电压值，在函数内修改相应点的电压
 	virtual void computingCurrent() = 0;//计算当前元件的电流
+	virtual std::string getComponentName() const = 0;//返回元件名
+	virtual double getCurrent() const = 0;//返回电流值
 protected:
 	std::string		m_componentName;
 	Connection*		m_leftConnection;
@@ -42,6 +44,9 @@ public:
 		Component(batteryName, leftConnection, rightConnection), m_voltage(voltage) {
 		this->m_rightConnection->changePointVoltage(m_voltage);
 	}
+	std::string getComponentName() const override {
+		return m_componentName;
+	}
 private:
 	double			m_voltage;
 };
@@ -54,6 +59,12 @@ public:
 	Resistor(std::string resistorName, double resistance, Connection* leftConnection, Connection* rightConnection) :
 		Component(resistorName, leftConnection, rightConnection), m_resistance(resistance) {
 
+	}
+	std::string getComponentName() const override {
+		return m_componentName;
+	}
+	double getCurrent() const override {
+		return m_current;
 	}
 	void computingVoltage() override;
 	void computingCurrent() override;
@@ -69,6 +80,12 @@ public:
 	Capacitor(std::string capacitorName, double capacitance, Connection* leftConnection, Connection* rightConnection) :
 		Component(capacitorName, leftConnection, rightConnection), m_capacitance(capacitance), m_storedVoltage(0) {
 
+	}
+	std::string getComponentName() const override {
+		return m_componentName;
+	}
+	double getCurrent() const override {
+		return m_current;
 	}
 	void computingVoltage(double timeUnit);//重载，在里面修改m_storedVoltage
 	void computingCurrent() override;
