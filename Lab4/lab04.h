@@ -29,10 +29,14 @@ public:
 		m_componentName(componentName), m_leftConnection(leftConnection), m_rightConnection(rightConnection), m_current(0) {
 		
 	}
+
 	virtual void computingVoltage(double timeSlot) = 0;//计算电压值，在函数内修改相应点的电压
 	virtual void computingCurrent() = 0;//计算当前元件的电流
+
 	virtual std::string getComponentName() const = 0;//返回元件名
 	virtual double getCurrent() const = 0;//返回电流值
+	virtual double getVoltage() const = 0;//返回电压差
+
 protected:
 	std::string		m_componentName;
 	Connection*		m_leftConnection;
@@ -54,6 +58,9 @@ public:
 	}
 	double getCurrent() const override {//不override实例化会报错，不必实现
 		return 0.0;
+	}
+	double getVoltage() const override {
+		return m_voltage;
 	}
 	void computingVoltage(double timeSlot) override {//不必实现
 
@@ -80,6 +87,13 @@ public:
 	double getCurrent() const override {
 		return m_current;
 	}
+	double getVoltage() const override {
+		double result = m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();
+		if (result >= 0.01) {
+			return result;
+		}
+		return 0.0;
+	}
 	void computingVoltage(double timeSlot) override;
 	void computingCurrent() override;
 private:
@@ -100,6 +114,9 @@ public:
 	}
 	double getCurrent() const override {
 		return m_current;
+	}
+	double getVoltage() const override {
+		return m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();
 	}
 	void computingVoltage(double timeSlot);//重载，在里面修改m_storedVoltage
 	void computingCurrent() override;
