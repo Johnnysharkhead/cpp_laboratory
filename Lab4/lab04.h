@@ -7,7 +7,10 @@
 
 class Connection {
 public:
-	Connection(): m_pointVoltage(0) {
+	Connection(): m_pointVoltage(0), m_end(false) {
+
+	}
+	Connection(bool ifEnd) : m_pointVoltage(0), m_end(ifEnd) {
 
 	}
 	double getPointVoltage() const {
@@ -16,8 +19,18 @@ public:
 	void changePointVoltage(double newVoltage) {
 		m_pointVoltage = newVoltage;
 	}
+	std::string whichEnd() const {//我想把它改得易懂一点 但也不是很易懂...之后再改
+		if (m_pointVoltage > 0 && m_end) {
+			return "left";
+		}
+		else if (m_pointVoltage == 0 && m_end) {
+			return "right";
+		}
+		else return "";
+	}
 private:
 	double			m_pointVoltage;
+	bool			m_end;
 };
 
 class Component {

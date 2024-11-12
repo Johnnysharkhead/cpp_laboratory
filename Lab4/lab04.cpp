@@ -5,10 +5,19 @@
 
 void Resistor::computingVoltage(double timeSlot) {
 	double voltageDifference = getVoltage();																	// 电势差
-	if (voltageDifference / m_resistance != m_current) {														//电势差/自身电阻 如果等于电流 视为电路平衡
-		double chargeMove = (voltageDifference / m_resistance) * timeSlot;									
-		m_rightConnection->changePointVoltage(voltageDifference - chargeMove);								// 电荷移动后，更新负极电压
-	}
+	double chargeMove = (voltageDifference / m_resistance) * timeSlot;
+	//if (voltageDifference / m_resistance < m_current - 0.01 || voltageDifference / m_resistance > m_current + 0.01) {
+		if (m_leftConnection->whichEnd() == "left") { //左侧电压接电池正极的（左侧电压恒定）
+			m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);	// 只有右侧电压变化
+		}
+		else if (m_rightConnection->whichEnd() == "right") { // 右侧电压接电池负极的（右侧电压恒定）
+			m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeMove);
+		}
+		else {
+			m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeMove);
+			m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);
+		}
+	//}
 }
 
 void Resistor::computingCurrent() {
@@ -47,14 +56,14 @@ void simulate(std::vector<Component*> circuit, int iterationTimes, int linesToPr
 			i->computingVoltage(timeSlot);
 			i->computingCurrent();
 		}
-		//if (count == iterationTimesBeforePrint) {
-			//count = 0;
-			//linesToPrint--;
+		if (count == iterationTimesBeforePrint) {
+			count = 0;
+			linesToPrint--;
 			for (auto i : circuit) {
 				std::cout << std::right << std::setw(5) << std::fixed << std::setprecision(2) << i->getVoltage() << " " << i->getCurrent() << " ";
 			}
 			std::cout<<std::endl;
-		//}
+		}
 	}
 }
 
@@ -62,8 +71,8 @@ void deallocate_components(std::vector<Component*> circuit) {
 }
 
 int main() {
-	Connection* p = new Connection();
-	Connection* n = new Connection();
+	Connection* p = new Connection(true);
+	Connection* n = new Connection(true);
 	Connection* R124 = new Connection();
 	Connection* R23 = new Connection();
 	std::vector<Component*> net;
