@@ -1,39 +1,104 @@
-#include "lab04.h"
+﻿#include "lab04.h"
 
 #include <iostream>
 #include <iomanip>
 
+double Connection::getPointVoltage() const {
+	return m_pointVoltage;
+}
+
+void Connection::changePointVoltage(double newVoltage) {
+	m_pointVoltage = newVoltage;
+}
+
+int Connection::whichEnd() const {
+	if (m_pointVoltage > 0 && m_end) {
+		return LEFT_END;
+	}
+	else if (m_pointVoltage == 0 && m_end) {
+		return RIGHT_END;
+	}
+	else return NOT_END;
+}
+
+std::string Battery::getComponentName() const {
+	return m_componentName;
+}
+
+double Battery::getCurrent() const {
+	return 0.0;
+}
+
+double Battery::getVoltage() const {
+	return m_voltage;
+}
+
+void Battery::computingVoltage(double timeSlot) {
+
+}
+
+void Battery::computingCurrent() {
+
+}
+
+std::string Resistor::getComponentName() const {
+	return m_componentName;
+}
+
+double Resistor::getCurrent() const {
+	return m_current;
+}
+
+double Resistor::getVoltage() const {
+	double result = m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();
+	if (result >= 0.01) {
+		return result;
+	}
+	return 0.0;
+}
+
 void Resistor::computingVoltage(double timeSlot) {
-	double voltageDifference = getVoltage();																	// ���Ʋ�
+	double voltageDifference = getVoltage();
 	double chargeMove = (voltageDifference / m_resistance) * timeSlot;
-	//if (voltageDifference / m_resistance < m_current - 0.01 || voltageDifference / m_resistance > m_current + 0.01) {
-		if (m_leftConnection->whichEnd() == "left") { //����ѹ�ӵ�������ģ�����ѹ�㶨��
-			m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);	// ֻ���Ҳ��ѹ�仯
-		}
-		else if (m_rightConnection->whichEnd() == "right") { // �Ҳ��ѹ�ӵ�ظ����ģ��Ҳ��ѹ�㶨��
-			m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeMove);
-		}
-		else {
-			m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeMove);
-			m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);
-		}
-	//}
+	//if it is connect directly with battery
+	if (m_leftConnection->whichEnd() == LEFT_END) {
+		m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);	
+	}
+	else if (m_rightConnection->whichEnd() == RIGHT_END) {
+		m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeMove);
+	}
+	else {
+		m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeMove);
+		m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);
+	}
 }
 
 void Resistor::computingCurrent() {
 	m_current = getVoltage() / m_resistance;
 }
 
-void Capacitor::computingVoltage(double timeSlot){
+std::string Capacitor::getComponentName() const {
+	return m_componentName;
+}
+
+double Capacitor::getCurrent() const {
+	return m_current;
+}
+
+double Capacitor::getVoltage() const {
+	return m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();
+}
+
+void Capacitor::computingVoltage(double timeSlot) {
 	double voltageDifference = m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();
 	double chargeToStore = m_capacitance * (voltageDifference - m_storedVoltage);
 
-	m_storedVoltage = m_storedVoltage + chargeToStore; // 计算电荷累计值
+	m_storedVoltage = m_storedVoltage + chargeToStore; 
 
-	if (m_leftConnection->whichEnd() == "left") { //����ѹ�ӵ�������ģ�����ѹ�㶨��
-		m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeToStore);	// ֻ���Ҳ��ѹ�仯
+	if (m_leftConnection->whichEnd() == LEFT_END) {
+		m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeToStore);
 	}
-	else if (m_rightConnection->whichEnd() == "right") { // �Ҳ��ѹ�ӵ�ظ����ģ��Ҳ��ѹ�㶨��
+	else if (m_rightConnection->whichEnd() == RIGHT_END) {
 		m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeToStore);
 	}
 	else {
@@ -44,10 +109,10 @@ void Capacitor::computingVoltage(double timeSlot){
 
 void Capacitor::computingCurrent() {
 	m_current = m_capacitance * (m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage() - m_storedVoltage);
-	if (m_current<0.0) m_current= -(m_current);
+	if (m_current < 0.0) m_current = -(m_current);
 }
 
-void simulate(std::vector<Component*> circuit, int iterationTimes, int linesToPrint, double timeSlot) {
+void simulate(std::vector<Component*>& circuit, int iterationTimes, int linesToPrint, double timeSlot) {
 	int iterationTimesBeforePrint = iterationTimes / linesToPrint;
 	for (auto i : circuit) {
 		std::cout << std::right << std::setw(11) << i->getComponentName();
@@ -72,61 +137,13 @@ void simulate(std::vector<Component*> circuit, int iterationTimes, int linesToPr
 
 				std::cout << std::right << std::setw(5) << std::fixed << std::setprecision(2) << i->getVoltage() << " " << i->getCurrent() << " ";
 			}
-			std::cout<<std::endl;
+			std::cout << std::endl;
 		}
 	}
 }
 
-void deallocate_components(std::vector<Component*> circuit) {
-}
-
-int main() {
-	Connection* p = new Connection(true);
-	Connection* n = new Connection(true);
-	Connection* R124 = new Connection();
-	Connection* R23 = new Connection();
-	std::vector<Component*> net1;
-	net1.push_back(new Battery("Bat", 24.00, n, p));
-	net1.push_back(new Resistor("R1", 6.00, p, R124));
-	net1.push_back(new Resistor("R2", 4.00, R124, R23));
-	net1.push_back(new Resistor("R3", 8.00, R23, n));
-	net1.push_back(new Resistor("R4", 12.00, R124, n));
-	simulate(net1, 100000, 10, 0.1);
-	deallocate_components(net1);
-
-	
-	std::cout << "\n" << std::endl;
-
-
-	Connection* P = new Connection(true);
-	Connection* N = new Connection(true);
-	Connection* L = new Connection();
-	Connection* R = new Connection();
-	std::vector<Component*> net2;
-	net2.push_back(new Battery("Bat", 24.0, N, P));
-	net2.push_back(new Resistor("R1", 150.0, P, L));
-	net2.push_back(new Resistor("R2", 50.0, P, R));
-	net2.push_back(new Resistor("R3", 100.0, R, L));
-	net2.push_back(new Resistor("R4", 300.0, L, N));
-	net2.push_back(new Resistor("R5", 250.0, R, N));
-
-	simulate(net2, 200000, 10, 0.01);
-	deallocate_components(net2);
-	
-	
-	std::cout << "\n" << std::endl;
-
-
-	std::vector<Component*> net3;
-	net3.push_back(new Battery("Bat", 24.0, N, P));
-	net3.push_back(new Resistor("R1", 150.0, P, L));
-	net3.push_back(new Resistor("R2", 50.0, P, R));
-	net3.push_back(new Capacitor("C3", 1.0, R, L));
-	net3.push_back(new Resistor("R4", 300.0, L, N));
-	net3.push_back(new Capacitor("C5", 0.75, R, N));
-
-	simulate(net3, 200000, 10, 0.01);
-	deallocate_components(net3);
-
-	return 0;
+void deallocate_components(std::vector<Component*>& circuit) {
+	for (auto i : circuit) {
+		delete i;
+	}
 }
