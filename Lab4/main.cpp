@@ -45,7 +45,6 @@ int main(int argc, char* argv[]) {
 	simulate(net1, iterationTimes, linesToPrint, timeSlot);
 	deallocate_components(net1);
 
-
 	std::cout << std::endl;
 
 

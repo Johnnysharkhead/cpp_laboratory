@@ -11,110 +11,111 @@
 
 class Connection {
 public:
-	Connection()			: m_pointVoltage(0), m_end(false) {}
-	Connection(bool ifEnd)	: m_pointVoltage(0), m_end(ifEnd) {
+	Connection(): m_pointVoltage(0), m_end(false) {}
+	Connection(bool ifEnd): m_pointVoltage(0), m_end(ifEnd) {}
 
-	}
+	double getPointVoltage() const;
+	void changePointVoltage(double newVoltage);
 
-	double					getPointVoltage()							const;
-	void					changePointVoltage(double newVoltage);
-
-	int						whichEnd()									const;
+	int whichEnd() const;
 
 private:
-	double					m_pointVoltage;
-	bool		const		m_end;
+	double m_pointVoltage;
+	bool const m_end;
 };
 
 class Component {
 public:
-	Component() {
+	Component() {}
 
-	}
-	Component(	std::string componentName,			Connection* leftConnection,			Connection* rightConnection) :
-				m_componentName(componentName),		m_leftConnection(leftConnection),	m_rightConnection(rightConnection), m_current(0) {
+	Component(std::string componentName, Connection* leftConnection, Connection* rightConnection) :
+		m_componentName(componentName),	m_leftConnection(leftConnection), m_rightConnection(rightConnection), m_current(0) {}
+	
+	virtual ~Component() = default; // virtual base class destructor 
 
-	}
+	virtual std::string	getComponentName() const = 0;
+	
+	virtual double getCurrent()	const = 0;
+	virtual double getVoltage()	const = 0;
 
-	virtual std::string		getComponentName()					const	= 0;
-	virtual double			getCurrent()						const	= 0;
-	virtual double			getVoltage()						const	= 0;
-
-	virtual void			computingVoltage(double timeSlot)			= 0;
-	virtual void			computingCurrent()							= 0;
+	virtual void computingVoltage(double timeSlot) = 0;
+	virtual void computingCurrent() = 0;
 
 protected:
-	std::string				m_componentName;
-	Connection*				m_leftConnection;
-	Connection*				m_rightConnection;
-	double					m_current;
+	std::string m_componentName;
+	Connection*	m_leftConnection;
+	Connection*	m_rightConnection;
+	double m_current;
 };
 
 class Battery : public Component {
 public:
-	Battery(): m_voltage(0) {
+	Battery(): m_voltage(0) {}
 
-	}
-	Battery(std::string batteryName, double voltage,	Connection* leftConnection, Connection* rightConnection) :
-		Component(		batteryName,								leftConnection,				rightConnection), 
-									m_voltage(voltage) {
+	Battery(std::string batteryName, double voltage, Connection* leftConnection, Connection* rightConnection) :
+		Component(batteryName, leftConnection, rightConnection), m_voltage(voltage){
 		this->m_rightConnection->changePointVoltage(m_voltage);
-	}
+		}
 
-	std::string				getComponentName()					const	override;
-	double					getCurrent()						const	override;
-	double					getVoltage()						const	override;
+	// ~Battery() {
+	// 	delete m_leftConnection;
+	// 	delete m_rightConnection;
+	// }
 
-	void					computingVoltage(double timeSlot)			override;
-	void					computingCurrent()							override;
+	std::string getComponentName() const override;
+	double getCurrent() const override;
+	double getVoltage()	const override;
+
+	void computingVoltage(double timeSlot) override;
+	void computingCurrent() override;
 
 private:
-	double		const		m_voltage;
+	double const m_voltage;
 };
 
 class Resistor : public Component {
 public:
-	Resistor() : m_resistance(0) {
+	Resistor() : m_resistance(0) {}
+	Resistor(std::string resistorName, double resistance, Connection* leftConnection, Connection* rightConnection) :
+		Component(resistorName,	leftConnection,	rightConnection), m_resistance(resistance) {}
+	
+	// ~Resistor() {
+	// 	delete m_leftConnection;
+	// 	delete m_rightConnection;
+	// }
+	
+	std::string	getComponentName() const override;
+	double getCurrent() const override;
+	double getVoltage()	const override;
 
-	}
-	Resistor(std::string	resistorName, double resistance, Connection*	leftConnection, Connection* rightConnection) :
-	Component(				resistorName,									leftConnection,				rightConnection), 
-									m_resistance(resistance) {
-
-	}
-
-	std::string				getComponentName()					const	override;
-	double					getCurrent()						const	override;
-	double					getVoltage()						const	override;
-
-	void					computingVoltage(double timeSlot)			override;
-	void					computingCurrent()							override;
+	void computingVoltage(double timeSlot) override;
+	void computingCurrent()	override;
 
 private:
-	double		const		m_resistance;
+	double const m_resistance;
 };
 
 class Capacitor : public Component {
 public:
-	Capacitor() : m_capacitance(0) {
+	Capacitor() : m_capacitance(0) {}
+	Capacitor(std::string capacitorName, double capacitance, Connection* leftConnection, Connection* rightConnection) :
+		Component(capacitorName, leftConnection, rightConnection), m_capacitance(capacitance), m_storedVoltage(0) {}
 
-	}
-	Capacitor(std::string	capacitorName, double capacitance, Connection*	leftConnection, Connection* rightConnection) :
-		Component(			capacitorName,									leftConnection,				rightConnection), 
-									m_capacitance(capacitance), m_storedVoltage(0) {
+	// ~Capacitor() {
+	// 	delete m_leftConnection;
+	// 	delete m_rightConnection;
+	// }
 
-	}
+	std::string getComponentName() const override;
+	double getCurrent() const override;
+	double getVoltage()	const override;
 
-	std::string				getComponentName()					const	override;
-	double					getCurrent()						const	override;
-	double					getVoltage()						const	override;
-
-	void					computingVoltage(double timeSlot)			override;
-	void					computingCurrent()							override;
+	void computingVoltage(double timeSlot) override;
+	void computingCurrent() override;
 
 private:
-	double		const		m_capacitance;
-	double					m_storedVoltage;
+	double const m_capacitance;
+	double m_storedVoltage;
 };
 
 void simulate(std::vector<Component*>& circuit, int iterationTimes, int linesToPrint, double timeSlot);

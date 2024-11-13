@@ -21,9 +21,14 @@ int Connection::whichEnd() const {
 	else return NOT_END;
 }
 
+
+
+
 std::string Battery::getComponentName() const {
 	return m_componentName;
 }
+
+
 
 double Battery::getCurrent() const {
 	return 0.0;
@@ -40,6 +45,7 @@ void Battery::computingVoltage(double timeSlot) {
 void Battery::computingCurrent() {
 
 }
+
 
 std::string Resistor::getComponentName() const {
 	return m_componentName;
@@ -76,6 +82,7 @@ void Resistor::computingVoltage(double timeSlot) {
 void Resistor::computingCurrent() {
 	m_current = getVoltage() / m_resistance;
 }
+
 
 std::string Capacitor::getComponentName() const {
 	return m_componentName;
@@ -146,4 +153,5 @@ void deallocate_components(std::vector<Component*>& circuit) {
 	for (auto i : circuit) {
 		delete i;
 	}
+	circuit.clear();
 }
