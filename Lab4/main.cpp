@@ -36,14 +36,19 @@ int main(int argc, char* argv[]) {
 	Connection* R124 = new Connection();
 	Connection* R23 = new Connection();
 
-	std::vector<Component*> net1;
-	net1.push_back(new Battery("Bat", batteryVoltage, n, p));
+	std::vector<Component*> net1; // Polymorphism
+	net1.push_back(new Battery("Bat", batteryVoltage, p, n));
 	net1.push_back(new Resistor("R1", 6.00, p, R124));
 	net1.push_back(new Resistor("R2", 4.00, R124, R23));
 	net1.push_back(new Resistor("R3", 8.00, R23, n));
 	net1.push_back(new Resistor("R4", 12.00, R124, n));
 	simulate(net1, iterationTimes, linesToPrint, timeSlot);
 	deallocate_components(net1);
+	delete n;
+	delete p;
+	delete R124;
+	delete R23;
+
 
 	std::cout << std::endl;
 
@@ -52,8 +57,8 @@ int main(int argc, char* argv[]) {
 	Connection* N = new Connection(true);
 	Connection* L = new Connection();
 	Connection* R = new Connection();
-	std::vector<Component*> net2;
-	net2.push_back(new Battery("Bat", batteryVoltage, N, P));
+	std::vector<Component*> net2; // Polymorphism
+	net2.push_back(new Battery("Bat", batteryVoltage, P, N));
 	net2.push_back(new Resistor("R1", 150.0, P, L));
 	net2.push_back(new Resistor("R2", 50.0, P, R));
 	net2.push_back(new Resistor("R3", 100.0, R, L));
@@ -63,12 +68,11 @@ int main(int argc, char* argv[]) {
 	simulate(net2, iterationTimes, linesToPrint, timeSlot);
 	deallocate_components(net2);
 
-
 	std::cout << std::endl;
 
 
-	std::vector<Component*> net3;
-	net3.push_back(new Battery("Bat", batteryVoltage, N, P));
+	std::vector<Component*> net3; // Polymorphism
+	net3.push_back(new Battery("Bat", batteryVoltage, P, N));
 	net3.push_back(new Resistor("R1", 150.0, P, L));
 	net3.push_back(new Resistor("R2", 50.0, P, R));
 	net3.push_back(new Capacitor("C3", 1.0, R, L));
@@ -77,6 +81,10 @@ int main(int argc, char* argv[]) {
 
 	simulate(net3, iterationTimes, linesToPrint, timeSlot);
 	deallocate_components(net3);
+	delete P;
+	delete N;
+	delete L;
+	delete R;
 
 	return 0;
 }

@@ -1,5 +1,4 @@
 ﻿#include "lab04.h"
-
 #include <iostream>
 #include <iomanip>
 
@@ -12,7 +11,7 @@ void Connection::changePointVoltage(double newVoltage) {
 }
 
 int Connection::whichEnd() const {
-	if (m_pointVoltage > 0 && m_end) {
+	if (m_pointVoltage > 0 && m_end) { //
 		return LEFT_END;
 	}
 	else if (m_pointVoltage == 0 && m_end) {
@@ -22,13 +21,9 @@ int Connection::whichEnd() const {
 }
 
 
-
-
 std::string Battery::getComponentName() const {
 	return m_componentName;
 }
-
-
 
 double Battery::getCurrent() const {
 	return 0.0;
@@ -38,13 +33,10 @@ double Battery::getVoltage() const {
 	return m_voltage;
 }
 
-void Battery::computingVoltage(double timeSlot) {
+void Battery::computingVoltage(double timeSlot) {}
 
-}
+void Battery::computingCurrent() {}
 
-void Battery::computingCurrent() {
-
-}
 
 
 std::string Resistor::getComponentName() const {
@@ -66,8 +58,8 @@ double Resistor::getVoltage() const {
 void Resistor::computingVoltage(double timeSlot) {
 	double voltageDifference = getVoltage();
 	double chargeMove = (voltageDifference / m_resistance) * timeSlot;
-	//if it is connect directly with battery
-	if (m_leftConnection->whichEnd() == LEFT_END) {
+
+	if (m_leftConnection->whichEnd() == LEFT_END) { // The left side of the component is directly connected to the positive terminal of the battery, i.e. the voltage on the left side of the component does not change with the movement of the charge.
 		m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);	
 	}
 	else if (m_rightConnection->whichEnd() == RIGHT_END) {
