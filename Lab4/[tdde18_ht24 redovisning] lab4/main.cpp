@@ -32,17 +32,24 @@ int main(int argc, char* argv[]) {
 		linesToPrint = std::stoi(argv[2]);
 		timeSlot = std::stod(argv[3]);
 		batteryVoltage = std::stod(argv[4]);
+		if (iterationTimes <= 0 || linesToPrint <= 0 || timeSlot <= 0 || batteryVoltage <= 0) {
+			throw std::runtime_error("input should be possitive value");
+		}
+	}
+	catch (const std::runtime_error& e) {
+		std::cerr << e.what() << std::endl;
+		return 1;
 	}
 	catch (const std::invalid_argument& e) {
-		std::cerr << "input cannot be converted into number value" << std::endl;
+		std::cerr << "input cannot be converted into number value" << e.what() << std::endl;
 		return 1;
 	}
 	catch (const std::out_of_range& e) {
-		std::cerr << "value out of range" << std::endl;
+		std::cerr << "value out of range" << e.what() << std::endl;
 		return 1;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "unknow error" << std::endl;
+		std::cerr << "unknow error" << e.what() << std::endl;
 		return 1;
 	}
 
@@ -85,7 +92,7 @@ int main(int argc, char* argv[]) {
 
 	std::cout << std::endl;
 
-	
+
 	Connection* P1 = new Connection(24.00, true);
 	Connection* N1 = new Connection(0.00, true);
 	Connection* L1 = new Connection();
@@ -100,7 +107,7 @@ int main(int argc, char* argv[]) {
 
 	simulate(net3, iterationTimes, linesToPrint, timeSlot);
 	deallocate_components(net3);
-	
+
 	delete P;
 	delete N;
 	delete L;
