@@ -4,16 +4,16 @@
 
 
 // TODO: Complementary work: Compiling your code with the  
-// "-Wall -Wextra -Wpedantic" flags should result in 0 warnings. 
+// "-Wall -Wextra -Wpedantic" flags should result in 0 warnings. --CHECK
 
 // TODO: Complementary work: Error messages should be descriptive  
 // in such a way that the user can correct their input without retrying  
 // multiple times. 
-// hint: when giving one wrong input i am unsure which one is wrong
+// hint: when giving one wrong input i am unsure which one is wrong --CHECK
 
 
 // TODO: Complementary work: Programs should not accept negative 
-// values for arguments where it doesn't make sense. 
+// values for arguments where it doesn't make sense. --CHECK
 
 
 
@@ -66,14 +66,9 @@ int main(int argc, char* argv[]) {
 	net1.push_back(new Resistor("R4", 12.00, R124, n));
 	simulate(net1, iterationTimes, linesToPrint, timeSlot);
 	deallocate_components(net1);
-	delete n;
-	delete p;
-	delete R124;
-	delete R23;
-
+	delete n,p,R124,R23;
 
 	std::cout << std::endl;
-
 
 	Connection* P = new Connection(24.00, true);
 	Connection* N = new Connection(0.00, true);
@@ -86,12 +81,11 @@ int main(int argc, char* argv[]) {
 	net2.push_back(new Resistor("R3", 100.0, R, L));
 	net2.push_back(new Resistor("R4", 300.0, L, N));
 	net2.push_back(new Resistor("R5", 250.0, R, N));
-
 	simulate(net2, iterationTimes, linesToPrint, timeSlot);
 	deallocate_components(net2);
+	delete P,N,L,R;
 
 	std::cout << std::endl;
-
 
 	Connection* P1 = new Connection(24.00, true);
 	Connection* N1 = new Connection(0.00, true);
@@ -104,19 +98,9 @@ int main(int argc, char* argv[]) {
 	net3.push_back(new Capacitor("C3", 1.0, R1, L1));
 	net3.push_back(new Resistor("R4", 300.0, L1, N1));
 	net3.push_back(new Capacitor("C5", 0.75, R1, N1));
-
 	simulate(net3, iterationTimes, linesToPrint, timeSlot);
 	deallocate_components(net3);
-
-	delete P;
-	delete N;
-	delete L;
-	delete R;
-
-	delete P1;
-	delete N1;
-	delete L1;
-	delete R1;
+	delete P1,N1,L1,R1;
 
 	return 0;
 }
