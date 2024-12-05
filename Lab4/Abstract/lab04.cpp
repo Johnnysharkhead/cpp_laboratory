@@ -36,12 +36,28 @@ std::ostream& operator << (std::ostream& os, const Component& component) {
 	return os;
 }
 
+// member function of Component(base class)
 
 Component::Component() :m_componentName{ 0 }, m_leftConnection{ 0 }, m_rightConnection{ 0 }, m_current{ 0 } {}
 
 Component::Component(std::string componentName, Connection* leftConnection, Connection* rightConnection) :
 	m_componentName(componentName), m_leftConnection(leftConnection), m_rightConnection(rightConnection), m_current{ 0 } {}
 
+double Component::getVoltage()const {
+	return m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();
+};
+
+void Component::computingVoltage(double timeSlot){ 
+	double chargeMove = calculateChargeMove(timeSlot);
+	updateConnections(chargeMove); // Updating the voltage values at the left and right connection points of the component respectively
+} 
+
+void Component::updateConnections(double chargeMove) { 
+    m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeMove);
+    m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);
+}
+
+// member function of Battery
 
 Battery::Battery() : m_voltage(0) {}
 
@@ -64,6 +80,7 @@ double Battery::getVoltage() const {
 	return m_voltage;
 }
 
+// member function of Resistor
 
 Resistor::Resistor() : m_resistance(0) {}
 
@@ -82,6 +99,12 @@ void Resistor::computingCurrent() {
 	m_current = getVoltage() / m_resistance;
 }
 
+double Resistor::calculateChargeMove(double timeSlot){
+    return (this->getVoltage() / m_resistance) * timeSlot;
+}
+
+
+// member function of Capacitor
 
 Capacitor::Capacitor() : m_capacitance{ 0 }, m_storedVoltage{ 0 } {}
 
@@ -99,6 +122,12 @@ double Capacitor::getCurrent() const {
 void Capacitor::computingCurrent() {
 	m_current = m_capacitance * (m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage() - m_storedVoltage);
 	if (m_current < 0.0) m_current = -(m_current);
+}
+
+double Capacitor::calculateChargeMove(double) {
+    double chargeToStore = m_capacitance * (this->getVoltage() - m_storedVoltage);
+    m_storedVoltage += chargeToStore;
+    return chargeToStore;
 }
 
 

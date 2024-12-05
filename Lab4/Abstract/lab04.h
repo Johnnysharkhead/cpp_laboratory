@@ -28,20 +28,14 @@ class Component {
 public:
 	Component();
 	Component(std::string componentName, Connection* leftConnection, Connection* rightConnection);
-
 	virtual ~Component() = default;
+	
 	virtual std::string	getComponentName() const = 0;
 	
 	virtual double getCurrent()	const = 0; // Get the value of current going through the component	
-	virtual double getVoltage()	const { // Get the voltage at the left connection point of the component minus the voltage at the right connection point
-		return m_leftConnection->getPointVoltage() - m_rightConnection->getPointVoltage();
-	};
+	virtual double getVoltage()	const; // Get the voltage at the left connection point of the component minus the voltage at the right connection point
 
-	// The computingVoltage method has a similar structure in the Resistor and Capacitor class. So we abstract the common logic into the base class
-	virtual void computingVoltage(double timeSlot){ 
-		double chargeMove = calculateChargeMove(timeSlot);
-		updateConnections(chargeMove); // Updating the voltage values at the left and right connection points of the component respectively
-	} 
+	virtual void computingVoltage(double timeSlot); // The computingVoltage method has a similar structure in the Resistor and Capacitor class. So we abstract the common logic into the base class
 	virtual void computingCurrent() = 0;
 
 	friend std::ostream& operator << (std::ostream&, const Component& component);
@@ -53,12 +47,8 @@ protected:
 	double m_current;
 
 	virtual double calculateChargeMove(double timeSlot) = 0; // The Resistor and Capacitor object must have their own method to calculate the chargeMove
-    void updateConnections(double chargeMove) { 
-        m_leftConnection->changePointVoltage(m_leftConnection->getPointVoltage() - chargeMove);
-        m_rightConnection->changePointVoltage(m_rightConnection->getPointVoltage() + chargeMove);
-    }
+    void updateConnections(double chargeMove); // Updates the voltage values at the left and right connection points
 };
-
 class Battery : public Component {
 public:
 	Battery();
@@ -73,7 +63,7 @@ public:
 	void computingCurrent() override;
 
 protected:
-    double calculateChargeMove(double /*timeSlot*/) override {
+    double calculateChargeMove(double) override {
         return 0;
     }
 
@@ -90,13 +80,10 @@ public:
 
 	std::string	getComponentName() const override;
 	double getCurrent() const override;
-
 	void computingCurrent()	override;
 
 protected:
-    double calculateChargeMove(double timeSlot) override {
-        return (this->getVoltage() / m_resistance) * timeSlot;
-    }
+    double calculateChargeMove(double timeSlot) override;
 
 private:
 	double const m_resistance;
@@ -111,16 +98,10 @@ public:
 
 	std::string getComponentName() const override;
 	double getCurrent() const override;
-
-	// void computingVoltage(double) override;
 	void computingCurrent() override;
 
 protected:
-    double calculateChargeMove(double) override {
-        double chargeToStore = m_capacitance * (this->getVoltage() - m_storedVoltage);
-        m_storedVoltage += chargeToStore;
-        return chargeToStore;
-    }
+    double calculateChargeMove(double) override;
 
 private:
 	double const m_capacitance;
