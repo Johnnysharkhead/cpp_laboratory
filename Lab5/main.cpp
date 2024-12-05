@@ -10,17 +10,18 @@
 
 // Record " word : number of this word " by map container
 std::map <std::string, int> countWordFrequency( const std::vector<std::string> &words){
-    std::map <std::string, int> wordCount; // Intitialize a map
+    std::map <std::string, int> wordCount; // Initialize a map named wordCount
     for(const auto &word : words){
-        ++wordCount[word]; // key is word and value is the number of the word
+        ++wordCount[word]; // key is word - value is the number of the word
     }
-    return wordCount; 
+    return wordCount; // transform a vector into a map 
 }
 
 // Sort pairs in descending order of frequency occurrence
 bool sortByValue(const std::pair<std::string, int> &a, const std::pair<std::string, int> &b){
-    return a.second > b.second;
+    return a.second > b.second; // .second = [the value of each pair], namely the occurance frequency for each word
 }
+
 
 int main(int argc, char* argv[]) { // argv[0]=main.exe argv[1]=any.txt argv[2]=parameter
 	if (argc < 2) {
@@ -39,19 +40,23 @@ int main(int argc, char* argv[]) { // argv[0]=main.exe argv[1]=any.txt argv[2]=p
 	}
 	
 	std::string word;
-	
 	std::vector<std::string> text;//text is saved in vector<std::string>
-	
 	while (file >> word) {
 		text.push_back(word);
 	}
 
 	std::vector<std::string> parameters(argv + 2, argv + argc);//parameters are saved in vector<std::string>
+	
 	for (auto it : parameters) {
 		if (it.find("--print") != std::string::npos) {
-
+		// When iterating through the vector, it passes each std::string element as an argument to the lambda function
+			std::for_each(
+				text.begin(), text.end(),[](const std::string &word) {std::cout << word << " ";}
+			);
+			std::cout << std::endl;
 		}
 		
+
 		else if (it.find("--frequency") != std::string::npos) {
 			auto result = countWordFrequency(text);
 
@@ -69,9 +74,17 @@ int main(int argc, char* argv[]) { // argv[0]=main.exe argv[1]=any.txt argv[2]=p
 			}
 		}
 
-		else if (it.find("--table") != std::string::npos) {
 
+		else if (it.find("--table") != std::string::npos) {
+			auto result = countWordFrequency(text);
+			std::for_each(
+				result.begin(), result.end(),[](const std::pair<std::string,int> &temp){
+					std::cout << std::setw(12) << std::left << temp.first << " " << temp.second << std::endl;
+				}
+			);
 		}
+
+
 		else if (it.find("--substitute=") != std::string::npos) {
 			auto equalSign = it.find('=');
 			auto plusSign = it.find('+');
@@ -86,9 +99,9 @@ int main(int argc, char* argv[]) { // argv[0]=main.exe argv[1]=any.txt argv[2]=p
 		}
 	}
 
-	for (auto it : text) {
-		std::cout << it << " ";
-	}
+	// for (auto it : text) {
+	// 	std::cout << it << " ";
+	// }
 
 
 	//we may not need to write it back to the file yet?
