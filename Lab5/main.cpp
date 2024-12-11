@@ -7,21 +7,7 @@
 #include <map>
 #include <iomanip> 
 
-
-// Record " word : number of this word " by map container
-std::map <std::string, int> countWordFrequency( const std::vector<std::string> &words){
-    std::map <std::string, int> wordCount; // Initialize a map named wordCount
-    for(const auto &word : words){
-        ++wordCount[word]; // key is word - value is the number of the word
-    }
-    return wordCount; // transform a vector into a map 
-}
-
-// Sort pairs in descending order of frequency occurrence
-bool sortByValue(const std::pair<std::string, int> &a, const std::pair<std::string, int> &b){
-    return a.second > b.second; // .second = [the value of each pair], namely the occurance frequency for each word
-}
-
+		
 
 int main(int argc, char* argv[]) { // argv[0]=main.exe argv[1]=any.txt argv[2]=parameter
 	if (argc < 2) {
@@ -40,7 +26,7 @@ int main(int argc, char* argv[]) { // argv[0]=main.exe argv[1]=any.txt argv[2]=p
 	}
 	
 	std::string word;
-	std::vector<std::string> text;//text is saved in vector<std::string>
+	std::vector<std::string> text; //text is saved in vector<std::string>
 	while (file >> word) {
 		text.push_back(word);
 	}
@@ -49,11 +35,19 @@ int main(int argc, char* argv[]) { // argv[0]=main.exe argv[1]=any.txt argv[2]=p
 	
 	for (auto it : parameters) {
 		if (it.find("--print") != std::string::npos) {
-		// When iterating through the vector, it passes each std::string element as an argument to the lambda function
+			
+			// When iterating through the vector, it passes each std::string element as an argument to the lambda function
 			std::for_each(
 				text.begin(), text.end(),[](const std::string &word) {std::cout << word << " ";}
 			);
 			std::cout << std::endl;
+
+			// Alternative way (using iterator) to implment print
+			// for(auto it = text.begin(); it != text.end(); ++it){
+			// 	std::cout << *it << " ";
+			// }
+			// std::cout << std::endl;
+		
 		}
 		
 
@@ -61,25 +55,28 @@ int main(int argc, char* argv[]) { // argv[0]=main.exe argv[1]=any.txt argv[2]=p
 			auto result = countWordFrequency(text);
 
 			// Copy all elements in map to a vector since we cannot sort anything in a map
-			// Get a vector containing all the map elements, each of which is a pair, preserving the original key-value relationships
+			// Get a vector(frequencyOrdered) containing all the map elements, each of which is a pair, preserving the original key-value relationships
 			std::vector < std::pair<std::string, int> > frequencyOrdered (result.begin(), result.end());
 
 			// Sort by the value in each element(pair) of the vector
 			std::sort(frequencyOrdered.begin(), frequencyOrdered.end(), sortByValue);
-
+			
 			// Print all elements and keep the key (pair.first) right aligned
+			int columnWidth = firstcolumnWidth(text);
 			for (auto &pair : frequencyOrdered){
-				int width = 12;
-				std::cout << std::setw(width) << std::right << pair.first << " " << pair.second << std::endl;
+				std::cout << std::setw(columnWidth) << std::right << pair.first << " " << pair.second << std::endl;
 			}
 		}
 
 
 		else if (it.find("--table") != std::string::npos) {
-			auto result = countWordFrequency(text);
+			auto result = countWordFrequency(text); // By default, map in C++ is sorted by **key** in ascending order.
+			
+			int columnWidth = firstcolumnWidth(text);
+			
 			std::for_each(
-				result.begin(), result.end(),[](const std::pair<std::string,int> &temp){
-					std::cout << std::setw(12) << std::left << temp.first << " " << temp.second << std::endl;
+				result.begin(), result.end(),[&columnWidth](const std::pair<std::string,int> &temp){
+					std::cout << std::setw(columnWidth) << std::left << temp.first << " " << temp.second << std::endl;
 				}
 			);
 		}
@@ -92,17 +89,13 @@ int main(int argc, char* argv[]) { // argv[0]=main.exe argv[1]=any.txt argv[2]=p
 			std::string newWord = it.substr(plusSign + 1);
 			substitudeText(text, oldWord, newWord);
 		}
+
 		else if(it.find("--remove=") != std::string::npos) {
 			auto equalSign = it.find('=');
 			std::string newWord = it.substr(equalSign + 1);
 			removeText(text, newWord);
 		}
 	}
-
-	// for (auto it : text) {
-	// 	std::cout << it << " ";
-	// }
-
 
 	//we may not need to write it back to the file yet?
 	return 0;
