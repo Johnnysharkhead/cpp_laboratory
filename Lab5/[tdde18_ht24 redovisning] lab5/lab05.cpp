@@ -10,12 +10,10 @@
 // the outputstream -- CHECK
 //
 // TODO: Complementary work: You do not have to check if the word exists before
-// trying to replace it or remove it.
+// trying to replace it or remove it. -- CHECK
 //
 // TODO: Complementary work: Do not repeat similar code, especially in frequency
 // and table where you only change the sticky manipulator -- CHECK
-
-
 
 
 //enter a single word, returns the word with all lower case letters
@@ -61,7 +59,7 @@ void printWord(const std::vector<std::string>& text, bool sortByFrequency) {
 }
 
 
-void chectParameters(std::string fileName, std::vector<std::string> parameters) {
+void chectParameters(std::string fileName, const std::vector<std::string> &parameters) {
 	std::fstream file(fileName.c_str());
 	if (!file) {
 		std::cout << "cannot open the file, please check if the file is exist" << std::endl;
