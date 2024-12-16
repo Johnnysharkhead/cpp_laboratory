@@ -4,17 +4,20 @@
 #include <iomanip> 
 
 // TODO: Complentary work: Not everything need a comment, read the
-// "Readability" section. Don't leave dead code as comments either.
+// "Readability" section. Don't leave dead code as comments either. -- CHECK
 //
 // TODO: Complementary work: Don't use for_each to print, try copying to
-// the outputstream
+// the outputstream -- CHECK
 //
 // TODO: Complementary work: You do not have to check if the word exists before
 // trying to replace it or remove it.
 //
 // TODO: Complementary work: Do not repeat similar code, especially in frequency
-// and table where you only change the sticky manipulator
-//
+// and table where you only change the sticky manipulator -- CHECK
+
+
+
+
 //enter a single word, returns the word with all lower case letters
 std::string toLowerCase(const std::string& str) {
 	std::string result = str;
@@ -27,12 +30,11 @@ std::string toLowerCase(const std::string& str) {
 std::map <std::string, int> countWordFrequency(const std::vector<std::string>& words) {
 
 	std::map <std::string, int> wordCount; // Initialize a map named wordCount
-	// std::map < std::string, int, std::greater<std::string> > wordCount;
+	
 	for (const auto& word : words) {
-		++wordCount[word]; // key is word(the way to access a element in a map) and value is the number of the word
+		++wordCount[word]; 
 	}
-	return wordCount; // By default, this map is sorted by **key** in ascending order.
-
+	return wordCount; 
 }
 
 int calculateCollumWidth(const std::vector<std::string>& text) {
@@ -41,9 +43,23 @@ int calculateCollumWidth(const std::vector<std::string>& text) {
 		return a.length() < b.length();
 		});
 	return (*it).length();
-	// std::cout << "The longest word in the text is: " << *it << ", with the length of " << columnWidth << std::endl;
-	// std::cout << "So we set the width of the first column: " << columnWidth << std::endl; 
 }
+
+
+void printWord(const std::vector<std::string>& text, bool sortByFrequency) {
+    auto wordCount = countWordFrequency(text);
+    int columnWidth = calculateCollumWidth(text);
+	std::vector<std::pair<std::string, int>> words(wordCount.begin(), wordCount.end()); // Constructor
+
+    if (sortByFrequency) { // Used for --frequency
+        std::sort(words.begin(), words.end(),[](const auto& a, const auto& b) { return a.second > b.second; });
+    }
+
+    for (const auto& pair : words) {
+        std::cout << std::setw(columnWidth) << (sortByFrequency ? std::right : std::left) << pair.first << " " << pair.second << std::endl;
+    }
+}
+
 
 void chectParameters(std::string fileName, std::vector<std::string> parameters) {
 	std::fstream file(fileName.c_str());
@@ -53,7 +69,7 @@ void chectParameters(std::string fileName, std::vector<std::string> parameters) 
 	}
 
 	std::string word;
-	std::vector<std::string> text; //text is saved in vector<std::string>
+	std::vector<std::string> text;
 	while (file >> word) {
 		text.push_back(word);
 	}
@@ -93,61 +109,24 @@ void chectParameters(std::string fileName, std::vector<std::string> parameters) 
 }
 
 void printFunction(const std::vector<std::string>& text) {
-	std::for_each(
-		text.begin(), text.end(), [](const std::string& word) {std::cout << word << " "; }
-	);
+	std::copy(text.begin(), text.end(), std::ostream_iterator<std::string>(std::cout, " "));
 	std::cout << std::endl;
 }
 
 void frequencyFunction(const std::vector<std::string>& text) {
-	auto result = countWordFrequency(text);
-
-	// Copy all elements in map to a vector since we cannot sort anything in a map
-	// Get a vector(frequencyOrdered) containing all the map elements, each of which is a pair, preserving the original key-value relationships
-	std::vector < std::pair<std::string, int> > frequencyOrdered(result.begin(), result.end());
-
-	// Sort by the value of pairs in a vector in descending/ascending order of frequency occurrence
-	std::sort(frequencyOrdered.begin(), frequencyOrdered.end(),
-		[](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-			return a.second > b.second;
-			//return a.sencond < b.second;
-		});
-
-	// Print all elements and keep the key (pair.first) right aligned
-	int columnWidth = calculateCollumWidth(text);
-	for (auto& pair : frequencyOrdered) {
-		std::cout << std::setw(columnWidth) << std::right << pair.first << " " << pair.second << std::endl;
-	}
+ 	printWord(text, true);
 }
 
 void tableFunction(const std::vector<std::string>& text) {
-	int columnWidth = calculateCollumWidth(text);
-	auto result = countWordFrequency(text); // By default, map in C++ is sorted by **key** in ascending order.
-
-	std::for_each( // The elements in the vector(result) are type "pair<string, int>".
-		result.begin(), result.end(), [&columnWidth](const std::pair<std::string, int>& temp) { // Capture the width of column in lambda function
-			std::cout << std::setw(columnWidth) << std::left << temp.first << " " << temp.second << std::endl;
-		}
-	);
+	printWord(text, false);
 }
+
 void substituteFunction(std::vector<std::string>& text, const std::string& oldWord, const std::string& newWord) {
-
-	auto findIT = std::find(text.begin(), text.end(), oldWord); // a iterator will move to the word that you want to replace 
-	if (findIT != text.end()) {
-		std::replace(text.begin(), text.end(), oldWord, newWord);
-	}
-	else {
-		std::cout << "The word you input is not in text, please input the word that you want to replace again." << std::endl;
-	}
+	std::replace(text.begin(), text.end(), oldWord, newWord);
 }
 
-// TODO: Comment: Could have used the normal std::remove() instead.
+// TODO: Comment: Could have used the normal std::remove() instead. -- CHECK
 void removeFunction(std::vector<std::string>& text, const std::string& wordToRemove) {
-	auto findIT = std::find(text.begin(), text.end(), wordToRemove);
-	if (findIT != text.end()) {
-		text.erase(std::remove_if(text.begin(), text.end(), [&wordToRemove](std::string x) { return x == wordToRemove; }), text.end());
-	}
-	else {
-		std::cout << "The word you input is not in text, please input the word that you want to delete again." << std::endl;
-	}
+	auto newEnd = std::remove(text.begin(), text.end(), wordToRemove); 
+	text.erase(newEnd, text.end());
 }
