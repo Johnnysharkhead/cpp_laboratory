@@ -16,24 +16,24 @@ int main(int argc, char* argv[]) { // argv[0]=main.exe argv[1]=any.txt argv[2]=p
 		std::cout << "parameters should be input" << std::endl;
 	}
 
-	std::string fileName {argv[1]};
+	std::string fileName{ argv[1] };
 
-    std::ifstream inputFile(fileName);
+	std::ifstream inputFile(fileName);
 
-    if (!inputFile.is_open()) {
-        std::cerr << "Error: Unable to open file " << fileName << std::endl;
-        return 1;
-    }
+	if (!inputFile.is_open()) {
+		std::cerr << "Error: Unable to open file " << fileName << std::endl;
+		return 1;
+	}
 
 	if (inputFile.peek() == std::ifstream::traits_type::eof()) {
-    	std::cout << "The file " << fileName << " is empty." << std::endl;
-        inputFile.close();
-        return 0;
-    }
+		std::cout << "The file " << fileName << " is empty." << std::endl;
+		inputFile.close();
+		return 0;
+	}
 
 	std::vector<std::string> parameters(argv + 2, argv + argc);//parameters are saved in vector<std::string>
 
-	chectParameters(fileName, parameters);
+	checkParameters(fileName, parameters);
 
 	return 0;
 }

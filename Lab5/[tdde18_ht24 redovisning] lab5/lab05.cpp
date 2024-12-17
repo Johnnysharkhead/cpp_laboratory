@@ -18,7 +18,7 @@
 
 //enter a single word, returns the word with all lower case letters
 std::string toLowerCase(const std::string& str) {
-	std::string result = str;
+	std::string result{ str };
 	std::transform(result.begin(), result.end(), result.begin(), ::tolower);
 	return result;
 }
@@ -28,11 +28,11 @@ std::string toLowerCase(const std::string& str) {
 std::map <std::string, int> countWordFrequency(const std::vector<std::string>& words) {
 
 	std::map <std::string, int> wordCount; // Initialize a map named wordCount
-	
+
 	for (const auto& word : words) {
-		++wordCount[word]; 
+		++wordCount[word];
 	}
-	return wordCount; 
+	return wordCount;
 }
 
 int calculateCollumWidth(const std::vector<std::string>& text) {
@@ -45,21 +45,21 @@ int calculateCollumWidth(const std::vector<std::string>& text) {
 
 
 void printWord(const std::vector<std::string>& text, bool sortByFrequency) {
-    auto wordCount = countWordFrequency(text);
-    int columnWidth = calculateCollumWidth(text);
+	auto wordCount = countWordFrequency(text);
+	int columnWidth = calculateCollumWidth(text);
 	std::vector<std::pair<std::string, int>> words(wordCount.begin(), wordCount.end()); // Constructor
 
-    if (sortByFrequency) { // Used for --frequency
-        std::sort(words.begin(), words.end(),[](const auto& a, const auto& b) { return a.second > b.second; });
-    }
+	if (sortByFrequency) { // Used for --frequency
+		std::sort(words.begin(), words.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
+	}
 
-    for (const auto& pair : words) {
-        std::cout << std::setw(columnWidth) << (sortByFrequency ? std::right : std::left) << pair.first << " " << pair.second << std::endl;
-    }
+	for (const auto& pair : words) {
+		std::cout << std::setw(columnWidth) << (sortByFrequency ? std::right : std::left) << pair.first << " " << pair.second << std::endl;
+	}
 }
 
 
-void chectParameters(std::string fileName, const std::vector<std::string> &parameters) {
+void checkParameters(const std::string& fileName, const std::vector<std::string>& parameters) {
 	std::fstream file(fileName.c_str());
 	if (!file) {
 		std::cout << "cannot open the file, please check if the file is exist" << std::endl;
@@ -112,7 +112,7 @@ void printFunction(const std::vector<std::string>& text) {
 }
 
 void frequencyFunction(const std::vector<std::string>& text) {
- 	printWord(text, true);
+	printWord(text, true);
 }
 
 void tableFunction(const std::vector<std::string>& text) {
@@ -125,6 +125,6 @@ void substituteFunction(std::vector<std::string>& text, const std::string& oldWo
 
 // TODO: Comment: Could have used the normal std::remove() instead. -- CHECK
 void removeFunction(std::vector<std::string>& text, const std::string& wordToRemove) {
-	auto newEnd = std::remove(text.begin(), text.end(), wordToRemove); 
+	auto newEnd = std::remove(text.begin(), text.end(), wordToRemove);
 	text.erase(newEnd, text.end());
 }

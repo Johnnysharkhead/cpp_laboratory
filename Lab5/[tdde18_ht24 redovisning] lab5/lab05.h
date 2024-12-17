@@ -13,7 +13,7 @@ std::string toLowerCase(const std::string& str);
 std::map <std::string, int> countWordFrequency(const std::vector<std::string>& words);
 int calculateCollumWidth(const std::vector<std::string>& text);
 
-void chectParameters(std::string fileName, const std::vector<std::string>& parameters);
+void checkParameters(const std::string& fileName, const std::vector<std::string>& parameters);
 
 void printFunction(const std::vector<std::string>& text);
 void frequencyFunction(const std::vector<std::string>& text);
