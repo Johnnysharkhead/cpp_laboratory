@@ -1,0 +1,113 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 600px;
+    height: 400px;
+    display: flex;
+    gap: 10px;
+}
+
+.left-panel {
+    flex: 1;
+    width: 340px;
+    height: 100%;
+    border: 1px solid #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right-panel {
+    flex: 1;
+    width: 240px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+}
+
+.signup-section {
+    border: 1px solid #000;
+    height: 70%;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.signup-section h3 {
+    margin-top: 5px; 
+    margin-bottom: 5px; 
+    text-align: center;
+}
+  
+#signup .input-group {
+    display: flex;
+    width: 100%; /* 确保输入组不会超过表单宽度 */
+    margin-bottom: 5px;
+}
+
+#signup .input-group label {
+    font-size: 13px;
+    flex: 0 0 80px; 
+    margin-right: 5px;
+}
+  
+#signup .input-group input, #signup .input-group select {
+    min-width: 0; /* 防止输入框过小 */
+}
+
+#gender {
+    margin-bottom: 3px;
+}
+
+
+
+.login-section {
+    border: 1px solid #000;
+    height: 30%;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+#login{
+    margin-bottom: 1px;
+}
+
+#login .input-group {
+    margin-top: 10px;
+    display: flex;
+    width: 100%; /* 确保输入组不会超过表单宽度 */
+    margin-bottom: 5px;
+}
+
+#login .input-group label {
+    font-size: 13px;
+    flex: 0 0 80px; /* Adjust width as needed */
+    margin-right: 5px;
+}
+  
+#login .input-group input {
+    min-width: 0; /* 防止输入框过小 */
+}
+
+
+
+
+button {
+    width: 60px;
+    padding: 4px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    float: right;
+}
